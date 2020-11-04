@@ -1,0 +1,3 @@
+firestore/env
+cloud_functions/lookerbot/send_receive_messages/__pycache__
+cloud_functions/lookerbot/send_receive_messages/env
