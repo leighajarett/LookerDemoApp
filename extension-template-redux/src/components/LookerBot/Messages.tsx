@@ -70,12 +70,10 @@ export function Messages(props:any){
 
     return(
         <>
-        {/* height="100%" display="flex" flexDirection="column" */}
         <Box height="100%" display="flex" flexDirection="column" >
             <Box padding=".5rem" marginTop="0" marginBottom=".25rem" backgroundColor="rgb(45, 126, 234)" height="2rem" width="100%">
                 <Paragraph fontWeight="bold" color="white"> LookerDemoBot</Paragraph>
             </Box>
-        {/* position="absolute" bottom="0"  */}
             <Box margin=".5rem" overflowY="auto" flex={1} > 
                 <List>
                     {props.messages.map((value:message, index:number) => {
@@ -111,7 +109,6 @@ export function Message(props:any){
     )
 }
 
-
 const mapStatetoProps = ( state:any ) => {
     return {
         messages: state.messages,
@@ -128,34 +125,3 @@ const mapDispatchtoProps = ( dispatch:any ) => {
 
 export default connect(mapStatetoProps,mapDispatchtoProps)(Messages);
 
-
-
-// const getMessage = async (body:Object) => {
-        //     const response = await extensionSDK.fetchProxy(
-        //         "https://us-central1-intricate-reef-291721.cloudfunctions.net/lookerdemo_chat",
-        //         {
-        //             method: 'POST',
-        //             headers: {
-        //             "Content-Type": "application/json"
-        //             },
-        //             body: JSON.stringify(body)
-        //         }
-        //     );
-        //     if (response.ok) {
-        //         setSessionID(response.body.session_id);
-        //         var newMessage:message ={'messageSender':'user','message':response.body.message};
-        //         props.sendNewMessage(newMessage);
-        //     } else {
-        //         console.log('Problem sending / receiving response to chatbot ', response.body)
-        //     }
-           
-        // }
-        // // send the last message to the chatbot
-        // if(props.messages.length> 0 && props.messages[props.messages.length-1].messageSender!='bot'){
-        //     let last_message = props.messages[props.messages.length-1].message;
-        //     if(sessionId){
-        //         getMessage({"text":last_message, "session_id":sessionId})
-        //     } else {
-        //         getMessage({"text":last_message})
-        //     }
-        // }
