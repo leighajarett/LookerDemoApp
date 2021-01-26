@@ -31,11 +31,6 @@ export default function Home(props: HomeProps){
     const [newDemos, setNew] = useState<any[]>([]);
     // const [favoritesLoading, setFavoritesLoading] = useState(false);
 
-
-    useEffect(() => {
-
-    },[favoriteDemos])
-
     // get the 6 most recently updated demo use case documents
     useEffect(() => {
         const getNewDemos = async (collectionRef: any) => {

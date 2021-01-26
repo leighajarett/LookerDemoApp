@@ -6,7 +6,7 @@ import {
     ExtensionContextData,
     getCore40SDK,
   } from '@looker/extension-sdk-react'
-import { StringIterator } from 'lodash'
+import { StringIterator, String } from 'lodash'
 import { createCipher } from 'crypto'
 import { type } from 'os'
 import { exception } from 'console'
@@ -16,7 +16,8 @@ interface DemoTileProps {
     id: string,
     name: string,
     description: string,
-    overview_dashboard_slug:string,
+    overview_dashboard_slug?:string,
+    verified:string,
     vertical:string,
     horizontal:string,
     new_banner:any,
@@ -47,12 +48,13 @@ export default function DemoTile(props: DemoTileProps){
     var today = new Date().getTime() / 1000;
     const history = useHistory();
 
+    console.log('demo tile props', props)
+
     // get the information about the dashboard from its slug
     useEffect(() => {
-        console.log('Getting dashboard - ', props.overview_dashboard_slug)
-        const dashboard = async () => {
+        const dashboard = async (id:string) => {
             try {
-                const dash = await sdk.ok(sdk.dashboard(props.overview_dashboard_slug));
+                const dash = await sdk.ok(sdk.dashboard(id));
                 if(dash){
                     setOverviewTitle(dash.title || '');
                     setOverviewId(dash.id || '');
@@ -68,25 +70,26 @@ export default function DemoTile(props: DemoTileProps){
                 console.log('Problem retrieving the dashboard ', err)
             }
         }
-        dashboard();
+        if(props.overview_dashboard_slug){dashboard(props.overview_dashboard_slug);}
     } ,[props.overview_dashboard_slug, favorite, props.favoriteDemos])
 
 
     // / get content thumbnail
     useEffect(() => {
-        if(overviewId){
-            const getThumbnail = async () => {
-                try{
-                    const thumbnailResponse = await sdk.ok(sdk.content_thumbnail({type:"dashboard",resource_id: overviewId }))
-                    const blob = new Blob([thumbnailResponse], { type: 'image/svg+xml' });
-                    let url = URL.createObjectURL(blob);
-                    setSvg(url);
-                }catch(err){
-                    console.log('Problem getting thumbnail ', err)
-                }
+        const getThumbnail = async (id:string) => {
+            try{
+                const thumbnailResponse = await sdk.ok(sdk.content_thumbnail({type:"dashboard",resource_id: id }))
+                const blob = new Blob([thumbnailResponse], { type: 'image/svg+xml' });
+                let url = URL.createObjectURL(blob);
+                setSvg(url);
+            }catch(err){
+                console.log('Problem getting thumbnail ', err)
             }
-            getThumbnail()
         }
+        if(overviewId){getThumbnail(overviewId)}
+        else{
+            console.log('getting thumbnail for unverified') 
+            getThumbnail('1')}
     } ,[overviewId])
  
 
@@ -194,9 +197,15 @@ export default function DemoTile(props: DemoTileProps){
                                 <IconButton label="Unfavorite" icon="Favorite" onClick={()=>handleFavorite(false)}/>
                             </Tooltip> 
                             : 
-                            <Tooltip content={"Favorite All Demos with "+ overviewTitle + " Dashboard"} width="10rem">
-                                <IconButton label="Favorite" icon="FavoriteOutline" onClick={()=>handleFavorite(true)} />
-                            </Tooltip> 
+                            <>
+                            { props.verified == 'True' ? 
+                                <Tooltip content={"Favorite All Demos with "+ overviewTitle + " Dashboard"} width="10rem">
+                                    <IconButton label="Favorite" icon="FavoriteOutline" onClick={()=>handleFavorite(true)} />  
+                                </Tooltip> :
+                                <Tooltip content={"Can't favorite unverified demos"+ overviewTitle + " Dashboard"} width="10rem">
+                                    <IconButton label="Cant Favorite" icon="FavoriteOutline" disabled />
+                                </Tooltip> }
+                            </>
                         }
                     </Box>
                     <Paragraph fontSize='xsmall'>{props.description}</Paragraph>
@@ -207,8 +216,13 @@ export default function DemoTile(props: DemoTileProps){
                         <Box marginLeft="3"><Badge intent="neutral" size="small">Horizontal: {props.horizontal}</Badge></Box>
                     </Box>
                     <Box marginTop=".3rem">
+                        { props.verified == 'True' ? 
+                        <>
                         <Text fontSize='xxsmall' variant="secondary" marginRight="2">{countViews} Views, </Text>
                         <Text fontSize='xxsmall' variant="secondary">{countFavorites} Favorites </Text>
+                        </>
+                        : <Text fontSize='xxsmall' variant="secondary" marginRight="2">This is an unverified demo </Text>
+                        }       
                     </Box>
                 </Box>
             </CardContent>

@@ -11,7 +11,7 @@ import {useHistory} from 'react-router-dom';
 
 
 
-export default function NewContent(){
+export default function NewContent(props:any){
     const [currentTabIndex, setTab] = useState(0)
     const tabIndex: { [k: number]: string } ={0:ROUTES.NEW_NEW_ROUTE as string, 1:ROUTES.ADD_NEW_ROUTE as string, 2:ROUTES.LOG_NEW_ROUTE as string}
     // reverse the index json for easier lookup
@@ -63,7 +63,7 @@ export default function NewContent(){
                             <AddNew/>
                         </Route>
                         <Route path={ROUTES.LOG_NEW_ROUTE} exact>
-                            <LogNew/>
+                            <LogNew firestore={props.firestore}/>
                         </Route>
                     </Switch>
                 </TabPanels>

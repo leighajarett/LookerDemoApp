@@ -111,14 +111,14 @@ export default function Extension(props: any){
             <Route path={ROUTES.REQUESTS_ROUTE}>
               <Tickets></Tickets>
             </Route>
-            <Route path={ROUTES.NEW_ROUTE}>
-              <NewContent></NewContent>
-            </Route>
             <Route path={ROUTES.INSTANCE_ROUTE}>
               These are my demo instances lalala
             </Route>
             <Route path={ROUTES.ADMIN_ROUTE}>
               <Admin></Admin>
+            </Route>
+            <Route path={ROUTES.WORKSHOP_ROUTE}>
+              <Workshop></Workshop>
             </Route>
             <LoggedIn firebaseUser={firebaseUser} firebase={firebase} />
           </Switch>
@@ -136,10 +136,10 @@ export function LoggedIn(props: any){
           <Home firestore={props.firebase.firestore()}></Home> 
         </Route>
         <Route exact={true} path={ROUTES.CONTENT_ROUTE}>
-          <DemoContent></DemoContent>
+          <DemoContent firestore={props.firebase.firestore()}></DemoContent>
         </Route>
-        <Route path={ROUTES.WORKSHOP_ROUTE}>
-          <Workshop></Workshop>
+        <Route path={ROUTES.NEW_ROUTE}>
+          <NewContent firestore={props.firebase.firestore()}></NewContent>
         </Route>
         <Route path={ROUTES.DEMO_ROUTE} children={<DemoDetail firestore={props.firebase.firestore()}/>}/>
       </>

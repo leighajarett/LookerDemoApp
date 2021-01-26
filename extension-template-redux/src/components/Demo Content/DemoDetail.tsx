@@ -14,6 +14,7 @@ import { database } from "firebase";
 export default function DemoDetail(props:any){
     let { demoId } = useParams();
     const [name, setName] = useState<string | undefined>(undefined);
+    const [dev_instance, setDevInstance] = useState<string | undefined>(undefined);
     const [description, setDescription] = useState<string | undefined>(undefined);
     const [createdDate, setDate] = useState<any | undefined>(undefined);
     const [vertical, setVertical] = useState<string | undefined>(undefined);
@@ -27,7 +28,6 @@ export default function DemoDetail(props:any){
     const [isFavorite,setFavorite]= useState(false);
     const [featuredVideo,setVideo]= useState<string | undefined>(undefined);
     const [links, setLinks] = useState< {[key: string]: any[]} | undefined>(undefined);
-
 
     const extensionContext = useContext<ExtensionContextData>(ExtensionContext)
     const sdk = extensionContext.core40SDK
@@ -51,10 +51,10 @@ export default function DemoDetail(props:any){
                     setHorizontal(data.horizontal);
                     setVertical(data.vertical);
                     setTags(data.tags);
-                    setVerified(data.verified);
+                    setVerified(data.verified == 'True');
                     var type_lookml ='LookML';
                     var lookml_data : any[] = []; 
-                    if(data.lookml_project_id){
+                    if(data.verified == 'True' && data.lookml_project_id){
                         lookml_data.push({
                             'link':'/projects/'+data.lookml_project_id,
                             'type':type_lookml,
@@ -62,15 +62,16 @@ export default function DemoDetail(props:any){
                             'description':'View the production LookML for this demo',
                             'id':'project'
                         });
-                        if(data.dev_instance){
-                            lookml_data.push({
-                                'url':data.dev_instance+'/projects/'+ data.lookml_project_id,
-                                'type':type_lookml,
-                                'name':'LookML Dev Project',
-                                'restricted_access':true,
-                                'description':'Open up a pull request for LookML changes'
-                            });
-                        }
+                    }
+                    if(data.dev_instance && data.lookml_project_id){
+                        setDevInstance(data.dev_instance);
+                        lookml_data.push({
+                            'url':data.dev_instance+'/projects/'+ data.lookml_project_id,
+                            'type':type_lookml,
+                            'name':'LookML Dev Project',
+                            'restricted_access':true,
+                            'description':'Open up a pull request for LookML changes'
+                        });
                     }
                     if(data.git_repo){
                         lookml_data.push({
@@ -137,7 +138,7 @@ export default function DemoDetail(props:any){
                             linksQuery.forEach((doc: any) => {
                                 const data = doc.data()
                                 data["id"]=doc.id;
-                                if(data.featured_video){setVideo(data.link)}
+                                if(data.type =='video' && !featuredVideo){setVideo(data.link)}
                                 if(data.type){
                                     var type: string = data.type;
                                     // if the data type is already a key in the object than add to the list
@@ -225,9 +226,17 @@ export default function DemoDetail(props:any){
                             <IconButton label="Unfavorite" icon="Favorite" onClick={()=>handleFavorite(false)}/>
                         </Tooltip> 
                         : 
-                        <Tooltip content={"Favorite All Demos with "+ overviewTitle + " Dashboard"} width="10rem">
-                            <IconButton label="Favorite" icon="FavoriteOutline" onClick={()=>handleFavorite(true)} />
-                        </Tooltip> 
+                        <>
+                            { verified ? 
+                                <Tooltip content={"Favorite All Demos with "+ overviewTitle + " Dashboard"} width="10rem">
+                                    <IconButton label="Favorite" icon="FavoriteOutline" onClick={()=>handleFavorite(true)} />
+                                </Tooltip> 
+                                :
+                                <Tooltip content={"Can't Favorite Unverified Demos"+ overviewTitle + " Dashboard"} width="10rem">
+                                    <IconButton label="Cant Favorite" icon="FavoriteOutline" disabled /> 
+                                </Tooltip> 
+                            }
+                        </>
                     }
                     <Box right="0" top="0" position="absolute" display="flex">
                         {createdDate && new Date().getSeconds() - createdDate< 14*60*60*24 ? 
@@ -243,9 +252,14 @@ export default function DemoDetail(props:any){
                     </Box> 
                 </Box>
                     <Box marginTop=".25rem" display="flex">
-                        <Text fontSize='xxsmall' variant="secondary" marginRight="2">{countViews} Views, </Text>
-                        <Text fontSize='xxsmall' variant="secondary">{countFavorites} Favorites </Text>
-                        <Box marginLeft="7"><Text fontSize='xxsmall' variant="secondary">Created on <DateFormat>{new Date()}</DateFormat></Text></Box>
+                    {verified ?     
+                        <Box marginRight="7">
+                            <Text fontSize='xxsmall' variant="secondary" marginRight="2">{countViews} Views, </Text>
+                            <Text fontSize='xxsmall' variant="secondary">{countFavorites} Favorites </Text>
+                        </Box>
+                        :  <></>
+                    }
+                    <Box ><Text fontSize='xxsmall' variant="secondary">Created on <DateFormat>{new Date()}</DateFormat></Text></Box>
                     </Box>
                     <Heading marginTop=".25em" fontSize="small">{description}</Heading>
                     <Box marginTop="1.5rem">
@@ -257,7 +271,7 @@ export default function DemoDetail(props:any){
                     </Box>
                     <Box marginTop="2rem">
                         <Grid columns={4}>
-                        {lookerContent?.map((d) => <LookerTile key={d.id} {...d} setfavoriteContentId={setfavoriteContentId} setContentMetaId={setContentMetaId} setOverviewTitle={setOverviewTitle} setViews={setViews} setFavorites={setFavorites} setFavorite={setFavorite} isFavorite={isFavorite}/>)}
+                        {lookerContent?.map((d) => <LookerTile key={d.id} {...d} verified={verified} dev_instance={dev_instance} setfavoriteContentId={setfavoriteContentId} setContentMetaId={setContentMetaId} setOverviewTitle={setOverviewTitle} setViews={setViews} setFavorites={setFavorites} setFavorite={setFavorite} isFavorite={isFavorite}/>)}
                         </Grid>
                         {featuredVideo ? <Box marginTop="2rem" width="100%" >
                             <ReactPlayer

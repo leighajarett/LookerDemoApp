@@ -8,7 +8,8 @@ import {
     ExtensionContextData,
   } from '@looker/extension-sdk-react'
 
-export default function LogNew(){
+export default function LogNew(props:any){
+    const [submitted,setSubmitted] = React.useState(false)
     const extensionContext = useContext<ExtensionContextData>(ExtensionContext);
     const { extensionSDK, core40SDK } = extensionContext;
 
@@ -70,7 +71,10 @@ export default function LogNew(){
                 <Paragraph fontSize="small" fontWeight="normal">Use this form to add new demos to our database, or log new content to existing demos</Paragraph>
                 </AccordionDisclosure>
                 <AccordionContent>
-                    <Logger/>
+                    {submitted ? 
+                    <Box><Box><Paragraph fontWeight="bold" fontStyle="italic">Thanks for submitting your demo content!</Paragraph></Box> 
+                    <Button onClick={() => setSubmitted(false)}>Log More Content</Button></Box> :
+                    <Logger firestore={props.firestore} submit={setSubmitted}/>}
                 </AccordionContent>
             </Accordion>
             <Accordion indicatorSize="large">
@@ -79,7 +83,7 @@ export default function LogNew(){
                 <Paragraph fontSize="small" fontWeight="normal">We will review your request and reply with any questions</Paragraph>
                 </AccordionDisclosure>
                 <AccordionContent>
-                    If you requested your demo to be 
+                    Your new demo content should immediately be available in the log. However, if you requested your demo to be verified and imported onto production instances, someone from the demo team will review it and either approve or follow up with some questions or edits.
                 </AccordionContent>
             </Accordion>
             </SpaceVertical>

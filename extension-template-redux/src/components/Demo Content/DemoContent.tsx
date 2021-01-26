@@ -1,114 +1,169 @@
-import { Heading, Box, FieldCheckbox, Space, Fieldset, List, ListItem, Paragraph, FieldSelectMulti, Grid } from '@looker/components'
-import React, { useState, useEffect } from "react"
+import { Heading, Box, FieldCheckbox, Space, Fieldset, List, ListItem, Paragraph, FieldSelectMulti, Grid, Link } from '@looker/components'
+import React, { useState, useEffect, useContext } from "react"
+import DemoTile from './DemoTile'
+import {
+    ExtensionContext,
+    ExtensionContextData,
+  } from '@looker/extension-sdk-react'
+import { useLocation, useHistory } from 'react-router-dom';
 
-export default function DemoContent(){
-    // const [verticals, setVerticals] = useState(['Financial Services','Retail','Healthcare']);
-    // const [horizontals, setHorizontals] = useState(['Customer Success','Marketing','Operations']);
-    // const [tags, setTags] = useState(['BQML','Google Healthcare API','Nested Fields']);
-    const [verticals, setVerticals] = useState([{value:'Financial Services'},{value:'Retail'},{value:'Healthcare'}])
-    const [horizontals, setHorizontals] = useState([{value:'Customer Success'},{value:'Marketing'},{value:'Operations'}])
-    const [tags, setTags] = useState([{value:'BQML'},{value:'Google Healthcare API'},{value:'Nested Fields'}])
+export default function DemoContent(props:any){
+    let query = new URLSearchParams(useLocation().search);
+    const history = useHistory();
+    const extensionContext = useContext<ExtensionContextData>(ExtensionContext);
+    const { extensionSDK, core40SDK } = extensionContext;
+    const [verticalOptions, setVerticalOptions] = useState<any[]>([]);
+    const [horizontalOptions, setHorizontalOptions] = useState<any[]>([]);
+    const [tagOptions, setTagOptions] = useState<any[]>([]);
+    const [verticals, setVerticals] = useState<string[] | undefined>([])
+    const [horizontals, setHorizontals] = useState<string[] | undefined>([])
+    const [tags, setTags] = useState<string[] | undefined>([])
+    const [instances, setInstances] = useState<string[] | undefined>([])
+    const [demos, setDemos] = useState<any[]>([]);
+    const [displayedDemos, setDisplayedDemos] = useState<any[]>([]);
+
 
     // Get all the possible options for filters
     useEffect(()=>{
         // query firestore to get all unique verticals
-        // String value = document.getString("username");
+        const getDemos = async (collectionRef: any) => {
+            try{
+                // get all the documents
+                const querySnapshot = await collectionRef.orderBy("new_banner.last_updated_at", "desc").get();
+                var allDemos:any[] = [];
+                var allVerticals:string[] = [];
+                var allVerticalOptions:any[] = [];
+                var allHoriztonals:string[] = [];
+                var allHorizontalOptions:any[] = [];
+                var allTags:string[] = [];
+                var allTagOptions:any[] = [];
+                if(querySnapshot){
+                    querySnapshot.forEach((doc: any) => {
+                        const data = doc.data()
+                        data["id"]=doc.id;
+                        console.log(data)
+                        allDemos.push(data);
+                        // add the verticals 
+                        if(allVerticals.indexOf(data["vertical"]) < 0){
+                            allVerticals.push(data['vertical'])
+                            allVerticalOptions.push({value:data['vertical']})
+                        }
+                        // add the horizontals and make all the intiial filter
+                        if(allHoriztonals.indexOf(data["horizontal"]) < 0){
+                            allHoriztonals.push(data['horizontal'])
+                            allHorizontalOptions.push({value:data['horizontal']})
+                        }
+                        // add the tags and make all the intiial filter
+                        for(var i=0;i<data['tags'].length;i++){
+                            if(allTags.indexOf(data["tags"][i]) < 0){
+                                allTags.push(data['tags'][i])
+                                allTagOptions.push({value:data['tags'][i]})
+                            }
+                        }
+                    })
+                    setDemos(allDemos);
+                    setDisplayedDemos(allDemos);
+                    setVerticalOptions(allVerticalOptions);
+                    setHorizontalOptions(allHorizontalOptions);
+                    setTagOptions(allTagOptions);
+                }
+            }catch(err){
+                console.log('Problem getting demos: ',err)
+            }
+        }
+        getDemos(props.firestore.collection('use_case'));
+        // set initial state based on the query results
+        setVerticals(JSON.stringify(query.get("verticals")?.split(','))==JSON.stringify([""]) ? [] : query.get("verticals")?.split(','));
+        setHorizontals(JSON.stringify(query.get("horizontals")?.split(','))==JSON.stringify([""]) ? [] : query.get("horizontals")?.split(','));
+        setTags(JSON.stringify(query.get("tags")?.split(','))==JSON.stringify([""]) ? [] : query.get("tags")?.split(','));
+        setInstances(JSON.stringify(query.get("instances")?.split(','))==JSON.stringify([""])? [] : query.get("instances")?.split(','));
     }
     ,[])
 
+    // handle filter change by pushing into path
+    const handleFilterChange = () => {
+        let searchParams = new URLSearchParams()
+        searchParams.set('verticals', verticals?.join(',') || '')
+        searchParams.set('horizontals', horizontals?.join(',') || '')
+        searchParams.set('tags', tags?.join(',') || '')
+        searchParams.set('instances', instances?.join(',') || '')
+        history.push({search: "?" + searchParams.toString()})
+    }
+
+
+    useEffect(()=>{
+        handleFilterChange()
+        // filter the demos
+        let filteredDemos = demos.filter((d)=>{
+            var v = true;
+            var t =true;
+            var h = true;
+            var i = true;
+            if(verticals && verticals.length > 0){
+                v = verticals?.indexOf(d.vertical)>-1
+            }
+            if(horizontals && horizontals.length > 0){
+                h = horizontals?.indexOf(d.horizontal)>-1
+            }
+            if(tags && tags.length > 0){
+                t = d.tags.some((r:any)=> tags.indexOf(r) >= 0)
+            }
+            return v &&  h && t && i
+        })
+        setDisplayedDemos(filteredDemos);
+        console.log('my filtered results ', displayedDemos.slice(), filteredDemos)
+    }
+    ,[verticals,tags,horizontals, instances, demos])
+
     return(
-        <Box display="flex" width="100%" paddingTop="2em" padding="2em">
-            <Box width="40%">
-                <Heading color="key" fontSize="xlarge" fontWeight="bold">Available Demo Content</Heading>
-                <Heading marginTop="1em" fontSize="small">Use the filters to browse for the demo content you need. 
-                Click into any demo tile to see details and link out to content</Heading>
+        <Box width="100%" paddingTop="2em" padding="2em">
+            <Box display="flex" >
+                <Box width="50%" marginRight="1rem">
+                    <Heading color="key" fontSize="xlarge" fontWeight="bold">Available Demo Content</Heading>
+                    <Heading marginTop="1em" fontSize="small">Use the filters to browse for the demo content you need. 
+                    Click into any demo tile to see details and links to associated content, or head over to our <Link onClick={() => extensionSDK.openBrowserWindow('https://drive.google.com/corp/drive/u/0/folders/1C-vepuUT4Dc1t9wPD0mFcDsoeAHJEaWW', '_blank')}>Google Drive folder</Link> to browse files.</Heading>
+                </Box>
+                    <Fieldset legend="Filters" accordion defaultOpen>
+                        <Grid columns={4}>
+                            <FieldSelectMulti 
+                                label="Vertical"
+                                options={verticalOptions}
+                                values={verticals}
+                                onChange={setVerticals}
+                                isFilterable
+                                removeOnBackspace
+                            />
+                            <FieldSelectMulti 
+                                label="Horizontals"
+                                options={horizontalOptions}
+                                values={horizontals}
+                                onChange={setHorizontals}
+                                isFilterable
+                                removeOnBackspace
+                            />
+                            <FieldSelectMulti 
+                                label="Tags"
+                                options={tagOptions}
+                                values={tags}
+                                onChange={setTags}
+                                isFilterable
+                                removeOnBackspace
+                            />
+                            <FieldSelectMulti 
+                                label="Production Instances"
+                                options={[{'value':'Trial'},{'value':'PartnerDemo'},{'value':'GoogleDemo'}]}
+                                values={instances}
+                                onChange={setInstances}
+                                isFilterable
+                                removeOnBackspace
+                            />
+                        </Grid>
+                    </Fieldset>
             </Box>
-            <Box display="flex" marginLeft="auto" marginRight="0" maxWidth="60%">
-                {/* <FilterCheckbox label='Verticals' list={verticals}></FilterCheckbox>
-                <FilterCheckbox label='Horizontals' list={horizontals}></FilterCheckbox>
-                <FilterCheckbox label='Tags' list={tags}></FilterCheckbox> */}
-                <Grid columns={3}>
-                    <FieldSelectMulti 
-                        // description="this is the description"
-                        // detail="detail..."
-                        label="Vertical"
-                        options={verticals}
-                    />
-                    <FieldSelectMulti 
-                        // description="this is the description"
-                        // detail="detail..."
-                        label="Horizontals"
-                        options={horizontals}
-                    />
-                    <FieldSelectMulti 
-                        // description="this is the description"
-                        // detail="detail..."
-                        label="Tags"
-                        options={tags}
-                    />
-                </Grid>
-            </Box>
+            <Grid marginTop="1rem" columns={4}>
+                {displayedDemos.map((demo, index)=> <DemoTile key={index} {...demo}/>)}
+            </Grid>
         </Box>
     )
 }
 
-// export function FilterCheckbox(props){
-//     // state for each child checkbox
-//     const [checks, setChecks] = useState([]);
-//     // state for parent all checkbox
-//     const [allCheck, setAllChecks] = useState(true);
-//     const [testChild, setChild] = useState(true);
-
-
-//     // initialize the child checkbox states
-//     useEffect(() => {
-//         var checksObj = [];
-//         for (var i=0;i<props.list.length;i++){
-//             checksObj.push({"label":props.list[i],"key":i, "checked":false})
-//         }
-//         setChecks(checksObj);
-//       },[props.list]);
-
-
-//     // function handleAllChecked(){
-//     //     let verticals_ = verticals
-//     //     verticals_.forEach(vertical => vertical.checked = !vertical.checked) 
-//     //     setVerticals(verticals_)
-//     //   }
-    
-//     function handleCheckChildElement(key){
-//         // make a local copy of the list
-//         let list = checks;
-//         // find the checkbox that was clicked and change the state to be either checked / unchecked
-//         checks.forEach(element => {
-//             if (element.key === key)
-//                 element.checked = !element.checked 
-//         })
-//         // update the state
-//         setChecks(list);
-//         console.log(checks)
-//     }
-    
-//     return(
-//         <Box marginRight="2rem">
-//             <Fieldset legend={props.label} accordion>
-//             <List>
-//                 <ListItem>
-//                     <FieldCheckbox
-//                     label={"All " + props.label}
-//                     // onChange={handleAllChecked}
-//                     checked={allCheck}
-//                     />
-//                 </ListItem>
-//                 <ListItem>
-//                 <List pl="large">
-//                     <ListItem>
-//                         {checks.map((element) => <FieldCheckbox  onChange={() => handleCheckChildElement(element.key)} {...element} />)}
-//                     </ListItem>
-//                 </List>
-//                 </ListItem>
-//             </List>   
-//             </Fieldset>
-//         </Box>
-//     )
-// }
