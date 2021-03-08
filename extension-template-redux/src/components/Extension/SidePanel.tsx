@@ -7,7 +7,7 @@ export default function SidePanel(props: any){
     return (
           <Box minWidth="20rem" maxWidth="20rem" minHeight="100%" overflow="hidden" display="flex" flexDirection="column" borderRight="1px solid #DAE2F1">
             <Box margin="1rem" width="100%" display="flex">
-              <Box width="82px">
+              <Box width="82px" height="30px">
               <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 714.71 189.8" width="100%" height="100%"><defs>
               </defs><g id="Layer_2" data-name="Layer 2"><g id="specs">
                 <path fill="#5f6368" d="M58.49,0A16.6,16.6,0,0,0,44.72,25.86l7.09-7.08a6.88,6.88,0,0,1-.35-2.19,7,7,0,1,1,7,7,6.87,6.87,0,0,1-2.18-.35l-7.08,7.08A16.59,16.59,0,1,0,58.49,0Z"/>

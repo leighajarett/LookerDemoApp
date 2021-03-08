@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react"
-import { Grid, Badge, Heading, Box, Icon, Paragraph, IconButton, Space,Tooltip, Text, MessageBar, MenuGroup, MenuList, MenuItem, Card, CardContent, CardMedia, IconNames } from '@looker/components'
+import { Grid, Badge, Heading, Box, Icon, Paragraph, IconButton, Space,Tooltip, Text, MessageBar, MenuGroup, MenuList, MenuItem, Card, CardContent, CardMedia, IconNames, ButtonOutline } from '@looker/components'
 import { useParams } from "react-router-dom";
 import { DateFormat } from '@looker/components/lib/DateFormat'
 import ReactPlayer from "react-player"
@@ -44,12 +44,14 @@ export default function DemoDetail(props:any){
                 var linkList: {[key: string]: any[]} = {} ;
                 if(doc.exists){
                     const data = doc.data()
+                    console.log('doc exists', data)
                     data["id"]=doc.id;
                     setName(data.name);
                     setDescription(data.description);
-                    setDate(data.created_at.seconds);
+                    if(data.created_at){setDate(data.created_at.seconds);}
                     setHorizontal(data.horizontal);
                     setVertical(data.vertical);
+                    console.log(data.vertical)
                     setTags(data.tags);
                     setVerified(data.verified == 'True');
                     var type_lookml ='LookML';
@@ -88,8 +90,8 @@ export default function DemoDetail(props:any){
                     helpful_data.push({
                         'link':'my_link',
                         'type':type_helpful,
-                        'name':'Add Content',
-                        'description':'Add additional content to this demo',
+                        'name':'Edit Content',
+                        'description':'Add or modify content for this demo',
                         'id':'content'
                     })
                     if(data.trial_looker){
@@ -164,7 +166,7 @@ export default function DemoDetail(props:any){
                 console.log('Problem retrieving document: ',err)
             }
         }
-        getDemo(props.firestore.collection('use_case'));
+        getDemo(props.firestore);
     },[props.firestore, demoId])
 
     // function to favorite a dashboard
@@ -214,7 +216,6 @@ export default function DemoDetail(props:any){
             unfavoriteDashboard();
         }
     }
-
     
     return(
         <Box padding="2rem" display="flex" paddingBottom="3rem">
@@ -264,8 +265,8 @@ export default function DemoDetail(props:any){
                     <Heading marginTop=".25em" fontSize="small">{description}</Heading>
                     <Box marginTop="1.5rem">
                         <Box display="flex" marginLeft="-4">
-                            <Badge intent="neutral">Vertical: {vertical}</Badge>
-                            <Box marginLeft="3"><Badge intent="neutral">Horizontal: {horizontal}</Badge></Box>
+                            {vertical ? <Badge intent="neutral">Vertical: {vertical}</Badge> : <></>}
+                            {horizontal ? <Box marginLeft="3"><Badge intent="neutral">Horizontal: {horizontal}</Badge></Box>: <></>}
                             {tags?.map((tag) => <><Box marginLeft="3"><Badge intent="neutral">{tag}</Badge></Box></>)}
                         </Box>
                     </Box>
@@ -282,6 +283,7 @@ export default function DemoDetail(props:any){
                     </Box>
                 </Box>
             <Box marginLeft="3rem" width="30%">
+                <ButtonOutline width="100%" marginBottom="1rem">Add Demo to My Instance</ButtonOutline>
                 <MenuList>
                     {links ? Object.keys(links).map((type:string) => <LinkGroup key={type} type={type} links={links[type]}/>) : <></>}
                 </MenuList>

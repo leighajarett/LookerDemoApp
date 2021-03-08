@@ -104,7 +104,7 @@ export default function Logger(props:any){
                 console.log('Problem getting demos: ',err)
             }
         }
-        getDemos(props.firestore.collection('use_case'));
+        getDemos(props.firestore);
     }
     ,[])
 
@@ -145,7 +145,7 @@ export default function Logger(props:any){
         // if its a brand new use case
         if(newUseCase){
             new_record['new_banner'] = {'last_updated_at': new Date,'type':'Use Case'}
-            props.firestore.collection("use_case").doc(demo_id).set(new_record)
+            props.firestore.doc(demo_id).set(new_record)
                 .then(function() {
                     console.log("Document successfully written!");
                 })
@@ -163,7 +163,7 @@ export default function Logger(props:any){
                 new_type = 'Content'
             }
             if(new_type.length>0){
-                props.firestore.collection("use_case").doc(demo_id).update(
+                props.firestore.doc(demo_id).update(
                     {
                         "new_banner.last_updated_at": new Date,
                         "new_banner.type": new_type
@@ -176,7 +176,7 @@ export default function Logger(props:any){
                 var looker_id = val['type'] + '_' + val['id']
                 val['created_at'] = new Date;
                 val['index'] = index;
-                props.firestore.collection("use_case").doc(demo_id).collection("looker").doc(looker_id).set(val)
+                props.firestore.doc(demo_id).collection("looker").doc(looker_id).set(val)
                     .then(function() {
                         console.log("Document successfully written!");
                     })
@@ -189,7 +189,7 @@ export default function Logger(props:any){
         if(otherContent.length > 0){
             otherContent.forEach((val)=>{
                 val['created_at'] = new Date;
-                var newLinkRef = props.firestore.collection("use_case").doc(demo_id).collection("links").doc();
+                var newLinkRef = props.firestore.doc(demo_id).collection("links").doc();
                 newLinkRef.set(val)
                     .then(function() {
                         console.log("Document successfully written!");

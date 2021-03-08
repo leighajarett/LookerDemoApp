@@ -48,8 +48,7 @@ export default function DemoTile(props: DemoTileProps){
     var today = new Date().getTime() / 1000;
     const history = useHistory();
 
-    console.log('demo tile props', props)
-
+    console.log('id for ',props.name, overviewId)
     // get the information about the dashboard from its slug
     useEffect(() => {
         const dashboard = async (id:string) => {
@@ -163,7 +162,7 @@ export default function DemoTile(props: DemoTileProps){
     }
 
     return(
-        <Box>
+        <Box width="100%">
         <Box style={{float:"right"}} position="relative" minHeight="2em" minWidth="1rem">
             {today - props.new_banner.last_updated_at.seconds< 14*60*60*24 ? 
                 // <Box display="flex" right="0" top="0" position="absolute" >
@@ -173,7 +172,7 @@ export default function DemoTile(props: DemoTileProps){
                     // </Box> 
                     : <></>}
         </Box>
-        <Card style={{float:"right"}} position="relative" maxWidth="50rem" height="22rem" onClick={() => handleImageClick(props.id)} raised>
+        <Card style={{float:"right"}} position="relative" width="100%" height="22rem" onClick={() => handleImageClick(props.id)} raised>
             {/* only show a banner if new material has been added in the past 2 weeks */}
             {/* <StyledCardContent height="2.5rem">
                 <Box position="relative" width="100%" >
@@ -212,11 +211,17 @@ export default function DemoTile(props: DemoTileProps){
                 </Box>
                 <Box bottom="0" position="absolute" height="2rem">
                     <Box display="flex" marginLeft="-4">
-                        <Badge intent="neutral" size="small">Vertical: {props.vertical}</Badge>
-                        <Box marginLeft="3"><Badge intent="neutral" size="small">Horizontal: {props.horizontal}</Badge></Box>
+                    <Box marginLeft="3">
+                        <>
+                        {props.vertical ? <Badge intent="neutral" size="small">Vertical: {props.vertical}</Badge> : <></>}
+                        </>
+                        <>
+                        {props.horizontal ? <Badge intent="neutral" size="small">Horizontal: {props.horizontal}</Badge> : <></>}
+                        </>
+                    </Box>
                     </Box>
                     <Box marginTop=".3rem">
-                        { props.verified == 'True' ? 
+                        { props.verified == 'True' && countViews ? 
                         <>
                         <Text fontSize='xxsmall' variant="secondary" marginRight="2">{countViews} Views, </Text>
                         <Text fontSize='xxsmall' variant="secondary">{countFavorites} Favorites </Text>

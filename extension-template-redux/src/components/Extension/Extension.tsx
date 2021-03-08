@@ -129,19 +129,20 @@ export default function Extension(props: any){
 
 export function LoggedIn(props: any){
   console.log('Logged in props ', props)
+
   if(props.firebaseUser){
     return(
       <>
         <Route exact={true} path={ROUTES.HOME_ROUTE}>
-          <Home firestore={props.firebase.firestore()}></Home> 
+          <Home firestore={props.firebase.firestore().collection('env').doc('prod').collection('demo')}></Home> 
         </Route>
         <Route exact={true} path={ROUTES.CONTENT_ROUTE}>
-          <DemoContent firestore={props.firebase.firestore()}></DemoContent>
+          <DemoContent firestore={props.firebase.firestore().collection('env').doc('prod').collection('demo')}></DemoContent>
         </Route>
         <Route path={ROUTES.NEW_ROUTE}>
-          <NewContent firestore={props.firebase.firestore()}></NewContent>
+          <NewContent firestore={props.firebase.firestore().collection('env').doc('prod').collection('demo')}></NewContent>
         </Route>
-        <Route path={ROUTES.DEMO_ROUTE} children={<DemoDetail firestore={props.firebase.firestore()}/>}/>
+        <Route path={ROUTES.DEMO_ROUTE} children={<DemoDetail firestore={props.firebase.firestore().collection('env').doc('prod').collection('demo')}/>}/>
       </>
     )
   }

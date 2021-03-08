@@ -83,8 +83,8 @@ subdoc_ref.set({
 subdoc_ref = doc_ref.collection("looker").document('dashboard_feLFb25D6JjKic14MdPKhb')
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 273,
-    'dashboard_slug':'feLFb25D6JjKic14MdPKhb',
+    'id': 273,
+    'slug':'feLFb25D6JjKic14MdPKhb',
     'index':0,
     'is_overview':True,
     'type':'dashboard'
@@ -94,31 +94,31 @@ subdoc_ref.set({
 subdoc_ref = doc_ref.collection("looker").document('dashboard_TU4SBUVLvW1gDzfwCms2ji')
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 286,
-    'dashboard_slug':'TU4SBUVLvW1gDzfwCms2ji',
+    'id': 286,
+    'slug':'TU4SBUVLvW1gDzfwCms2ji',
     'index':1,
     'type':'dashboard',
 })
 
 
-subdoc_ref = doc_ref.collection("boards").document('prod_board')
-subdoc_ref.set({
-    'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 286,
-    'dashboard_slug':'TU4SBUVLvW1gDzfwCms2ji',
-    'index':1,
-     'type':'dashboard',
-})
+# subdoc_ref = doc_ref.collection("boards").document('prod_board')
+# subdoc_ref.set({
+#     'created_at': datetime.datetime.now(),
+#     'id': 286,
+#     'dashboard_slug':'TU4SBUVLvW1gDzfwCms2ji',
+#     'index':1,
+#      'type':'dashboard',
+# })
 
 
-subdoc_ref = doc_ref.collection("boards").document('dev_board')
-subdoc_ref.set({
-    'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 286,
-    'dashboard_slug':'TU4SBUVLvW1gDzfwCms2ji',
-    'index':1,
-     'type':'dashboard',
-})
+# subdoc_ref = doc_ref.collection("boards").document('dev_board')
+# subdoc_ref.set({
+#     'created_at': datetime.datetime.now(),
+#     'dev_dashboard_id': 286,
+#     'dashboard_slug':'TU4SBUVLvW1gDzfwCms2ji',
+#     'index':1,
+#      'type':'dashboard',
+# })
 
 
 
@@ -145,8 +145,8 @@ subdoc_ref = doc_ref.collection("looker").document('dashboard_bvOc0o9ZCXxYpk6N2A
 subdoc_ref.set({
     'type':'dashboard',
     'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 270,
-    'dashboard_slug':'bvOc0o9ZCXxYpk6N2AOxS5',
+    'id': 270,
+    'slug':'bvOc0o9ZCXxYpk6N2AOxS5',
     'index':0,
     'is_overview':True
 })
@@ -155,8 +155,8 @@ subdoc_ref = doc_ref.collection("looker").document('dashboard_vyXnb2W5dPGRLmjmsm
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'type':'dashboard',
-    'dev_dashboard_id': 275,
-    'dashboard_slug':'vyXnb2W5dPGRLmjmsm45nH',
+    'id': 275,
+    'slug':'vyXnb2W5dPGRLmjmsm45nH',
     'index':1
 })
 
@@ -164,8 +164,8 @@ subdoc_ref = doc_ref.collection("looker").document('dashboard_8EphDRYy4nsFisbvUY
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'type':'dashboard',
-    'dev_dashboard_id': 277,
-    'dashboard_slug':'8EphDRYy4nsFisbvUY4KRq',
+    'id': 277,
+    'slug':'8EphDRYy4nsFisbvUY4KRq',
     'index':2
 })
 
@@ -174,10 +174,10 @@ subdoc_ref = doc_ref.collection("looker").document('dashboard_ImdKtumpYGDKsZqKdG
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'type':'dashboard',
-    'dev_dashboard_id': 278,
-    'dashboard_slug':'ImdKtumpYGDKsZqKdGcacG',
+    'id': 278,
+    'slug':'ImdKtumpYGDKsZqKdGcacG',
     'index':3,
-    'tags':['Data Science']
+    # 'tags':['Data Science']
 })
 
 
@@ -203,33 +203,28 @@ subdoc_ref = doc_ref.collection("decks").document()
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'link':'https://docs.google.com/presentation/d/1DP5i8qyc9o3CEz3ztSvmyZo2WsHQZParY6iLuBPrOJo/edit#slide=id.g71accad20c_9_276',
-    'type':'Day in the Life'
-    },
-})
+    'type':'Day in the Life'})
 
 subdoc_ref = doc_ref.collection("videos").document()
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'link':'https://www.youtube.com/watch?v=puXk4Cz-QGQ#action=share',
     'type':'Webinar Recording'
-    },
-})
+    })
 
 subdoc_ref = doc_ref.collection("decks").document()
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
     'link':'https://docs.google.com/presentation/d/1k2ryDQu6fxxDnzIZbDg3vg75MxOmsruHb63EPckgE2g/edit#slide=id.g73b1ac7bfd_0_277',
     'type':'Explore Q & A'
-    },
-})
+    })
 
 subdoc_ref = doc_ref.collection("dashboards").document()
 subdoc_ref.set({
     'created_at': datetime.datetime.now(),
-    'dev_dashboard_id': 304,
+    'id': 304,
     'dashboard_slug':'7QMprcICQHCGIOARQ7LHbx',
-    'tags':['Overview']
-})
+    })
 
 subdoc_ref = doc_ref.collection("dashboards").document()
 subdoc_ref.set({

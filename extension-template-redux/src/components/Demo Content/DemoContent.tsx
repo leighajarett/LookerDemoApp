@@ -71,7 +71,7 @@ export default function DemoContent(props:any){
                 console.log('Problem getting demos: ',err)
             }
         }
-        getDemos(props.firestore.collection('use_case'));
+        getDemos(props.firestore);
         // set initial state based on the query results
         setVerticals(JSON.stringify(query.get("verticals")?.split(','))==JSON.stringify([""]) ? [] : query.get("verticals")?.split(','));
         setHorizontals(JSON.stringify(query.get("horizontals")?.split(','))==JSON.stringify([""]) ? [] : query.get("horizontals")?.split(','));

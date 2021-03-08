@@ -36,7 +36,7 @@ export default function Home(props: HomeProps){
         const getNewDemos = async (collectionRef: any) => {
             try{
                 // where("new_banner.last_updated_at.seconds",">=",new Date().getTime()/1000 + 24*60*60*14)
-                const querySnapshot = await collectionRef.orderBy("new_banner.last_updated_at", "desc").limit(6).get();
+                const querySnapshot = await collectionRef.orderBy("new_banner.last_updated_at", "desc").limit(4).get();
                 var newList:any[] = [];
                 if(querySnapshot){
                     querySnapshot.forEach((doc: any) => {
@@ -50,7 +50,7 @@ export default function Home(props: HomeProps){
                 console.log('Problem getting new demos: ',err)
             }
         }
-        getNewDemos(props.firestore.collection('use_case'));
+        getNewDemos(props.firestore);
     },[props.firestore])
 
 
@@ -96,7 +96,7 @@ export default function Home(props: HomeProps){
                 console.log('Problem getting favorites from Looker: ', error)
             }
         };
-        getAllFavorites(props.firestore.collection('use_case'))
+        getAllFavorites(props.firestore)
     } ,[props.firestore])
 
     return(
